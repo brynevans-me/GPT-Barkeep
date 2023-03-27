@@ -4,6 +4,8 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
+#Other Files
+
 # MongoDB Config
 from pymongo import MongoClient
 client = MongoClient('mongodb://localhost:27017/')
@@ -136,12 +138,12 @@ Character Description: ''' + f"{CharacterDescription}.\n\nBegin JSON:\n"
         character_json = None
 
     return character_json
-def summarize_character(CharacterDescription):
+def summarize_character(Character_JSON):
     prompt = '''You write paragraphs from game characters describing themselves in the first person. 
     The following is a JSON file of information on the character, 
     output a paragraph to help the user decide whether to use this character. 
     Use drama and evocatve language to communicate the idea of the character instead if just listing out facts, imply instead of say. 
-    Only say what the character would tell a stranger, do not tell secrets.\n\n\n''' + f"{CharacterDescription}\n\nInsert description here: "
+    Only say what the character would tell a stranger, do not tell secrets.\n\n\n''' + f"{Character_JSON}\n\nInsert description here: "
 
     response = openai.Completion.create(
         engine="text-davinci-003",
@@ -164,3 +166,4 @@ description = input("Enter Description: ")
 character = create_character(description)
 summary = summarize_character(character)
 print(summary)
+
