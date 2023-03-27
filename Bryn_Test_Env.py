@@ -18,8 +18,15 @@ elif UserSeed is not None:
 else:
     idea = Conversations.imagine_character()
 
-print(idea)
 
+print(idea)
+Continue = input("Continue?[n/y] ")
+if Continue == "y":
+    char = Conversations.create_character(idea)
+    print("--------------------")
+    print(Conversations.summarize_character(char))
+    print("--------------------")
+    print(char)
 #start_chat("""You are an AI Actor in a videogame portraying characters that are sent to you. You will produce dialog on behalf of the character.""")
 #description = input("Enter Description: ")
 #character = create_character(description)

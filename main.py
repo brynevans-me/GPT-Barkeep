@@ -3,7 +3,6 @@ import openai
 import os
 
 # set up OpenAI API
-openai.api_key = "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"
 
 # valid occupations
 occupations = {

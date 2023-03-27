@@ -91,23 +91,24 @@ def create_character(CharacterDescription):
 },
 "gameSpecific": {
 "faction": "",
-"questStatus": "not started",
 "inventory": [""]
 },
 "status": {
 "morale": 100,
 "emotion": "",
 "reason": "",
-"goals": [""]
+"longtermgoals": [""]
+"shorttermgoals": [""]
 },
 "custom": {
 "favoriteColor": "",
 "hometown": "",
 "fears": [""],
-"memories": [],
-"quirk":[],
-"secrets":[],
-"affect":[],
+"memories": [""],
+"quirks":[""],
+"secrets":[""],
+"affect":[""],
+"knowledge":[""]
 } 
 
 Based on the character description generate a matching JSON file. Invent details, name, relationships, etc. Anything not passed by the prompt should be invented. Some characters may need fields not listed in the example. Invent information not provided in the prompt to flesh out the character including names and places. Characters should be flawed but people. They should have pastimes and interests outside of their archetype. They should have non-mission related goals like normal humans. They should like things that would make a person like them happy. Every character should have something weird about them. Every character should have a secret and a unique way of speaking. Only output JSON. 
@@ -139,11 +140,8 @@ Character Description: ''' + f"{CharacterDescription}.\n\nBegin JSON:\n"
 
     return character_json
 def summarize_character(Character_JSON):
-    prompt = '''You write paragraphs from game characters describing themselves in the first person. 
-    The following is a JSON file of information on the character, 
-    output a paragraph to help the user decide whether to use this character. 
-    Use drama and evocatve language to communicate the idea of the character instead if just listing out facts, imply instead of say. 
-    Only say what the character would tell a stranger, do not tell secrets.\n\n\n''' + f"{Character_JSON}\n\nInsert description here: "
+    prompt = '''Use  one sentence to complete this prompt. Don't give too much information, just what someone looking would see: 
+I am a bartender. As I finish polishing up a glass I look up and see the following character sitting in a  stool:\n\n''' + f"{Character_JSON}\n\nWhen I look at them I see: "
 
     response = openai.Completion.create(
         engine="text-davinci-003",
@@ -159,12 +157,10 @@ def summarize_character(Character_JSON):
     generated_text = response.choices[0].text.strip()
 
 
-    return generated_text
-
-    
+    return generated_text    
 def imagine_character(Seed="Medieval",Num=1):
     #Num = Num + 1
-    prompt = f'Here are {Num} characters for a {Seed} game in the format \n<name> the <adjective> <type>\n<name> the <adjective> <type>\n'
+    prompt = f'Here are {Num} characters for a {Seed} game in the format \n<name> the <adjective> <occupation>\n<name> the <adjective> <occupation>\n'
 
     response = openai.Completion.create(
         engine="text-davinci-003",
