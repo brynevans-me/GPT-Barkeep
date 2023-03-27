@@ -1,8 +1,13 @@
 import json
 import openai
 import os
+# OS and Env
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 # set up OpenAI API
+openai.api_key = os.getenv("API_KEY")
 
 # valid occupations
 occupations = {
