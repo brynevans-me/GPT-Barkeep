@@ -162,8 +162,9 @@ def summarize_character(Character_JSON):
     return generated_text
 
     
-def imagine_character(Seed="Agatha the Fearless Warrior"):
-    prompt = f'Here are 2 characters for a game in the format <name> the <adjective> <ocupation>:\n{Seed}\n'
+def imagine_character(Seed="Agatha the Fearless Warrior",Num=1):
+    Num = Num + 1
+    prompt = f'Here are {Num} characters for a game:\n{Seed}\n'
 
     response = openai.Completion.create(
         engine="text-davinci-003",
@@ -179,11 +180,4 @@ def imagine_character(Seed="Agatha the Fearless Warrior"):
     generated_text = response.choices[0].text.strip()
  
     return generated_text
-#start_chat("""You are an AI Actor in a videogame portraying characters that are sent to you. You will produce dialog on behalf of the character.""")
-#description = input("Enter Description: ")
-#character = create_character(description)
-#summary = summarize_character(character)
-#print(summary)
 
-idea=imagine_character()
-print(idea)
