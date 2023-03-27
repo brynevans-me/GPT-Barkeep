@@ -162,9 +162,9 @@ def summarize_character(Character_JSON):
     return generated_text
 
     
-def imagine_character(Seed="Agatha the Fearless Warrior",Num=1):
-    Num = Num + 1
-    prompt = f'Here are {Num} characters for a game:\n{Seed}\n'
+def imagine_character(Seed="Medieval",Num=1):
+    #Num = Num + 1
+    prompt = f'Here are {Num} characters for a {Seed} game in the format \n<name> the <adjective> <type>\n<name> the <adjective> <type>\n'
 
     response = openai.Completion.create(
         engine="text-davinci-003",

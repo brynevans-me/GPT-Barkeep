@@ -1,6 +1,23 @@
 import Conversations
 
-idea=Conversations.imagine_character(Num=10,Seed="Galaxos the universe destroyer")
+
+UserNumInput = input("How many characters? [1] ")
+UserSeedInput = input("Seed character? [Medieval] ")
+
+# Check if user provided input for Num and convert it to an integer if they did
+UserNum = int(UserNumInput) if UserNumInput else None
+UserSeed = UserSeedInput if UserSeedInput else None
+
+# Call the function with the appropriate arguments
+if UserNum is not None and UserSeed is not None:
+    idea = Conversations.imagine_character(Num=UserNum, Seed=UserSeed)
+elif UserNum is not None:
+    idea = Conversations.imagine_character(Num=UserNum)
+elif UserSeed is not None:
+    idea = Conversations.imagine_character(Seed=UserSeed)
+else:
+    idea = Conversations.imagine_character()
+
 print(idea)
 
 #start_chat("""You are an AI Actor in a videogame portraying characters that are sent to you. You will produce dialog on behalf of the character.""")
