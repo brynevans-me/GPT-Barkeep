@@ -1,0 +1,41 @@
+{
+"characterID": "barkeep_001",
+"basicInfo": {
+"name": "Grimm",
+"gender": "Male",
+"occupation": "Barkeep",
+"age": 65
+},
+"appearance": {
+"hairColor": "Bushy gray beard",
+"eyeColor": "Dark brown",
+"height": "6'2\""
+},
+"personality": {
+"traits": ["Gruff", "No-nonsense", "Wary of strangers"],
+"likes": ["Strong ale", "Telling tall tales", "A good brawl"],
+"dislikes": ["Thieves", "Liars", "Anyone who causes trouble in his tavern"]
+},
+"relationships": {
+"friends": ["The local blacksmith", "A retired adventurer who occasionally stops by"],
+"family": ["His daughter who lives in a nearby village"],
+"enemies": ["A group of bandits who once tried to rob his tavern"]
+},
+"gameSpecific": {
+"faction": "None",
+"questStatus": "Not interested",
+"inventory": ["A large wooden club behind the bar"]
+},
+"status": {
+"morale": 75,
+"emotion": "Irritated",
+"reason": "A group of rowdy adventurers are causing trouble in his tavern",
+"goals": ["Keep his tavern running smoothly", "Protect his customers and property", "Help those in need"]
+},
+"custom": {
+"favoriteColor": "Dark green",
+"hometown": "A small village on the outskirts of the kingdom",
+"fears": ["Losing his tavern to fire or other disasters"],
+"memories": ["The time he fended off a group of goblins who attacked his tavern"]
+}
+}
