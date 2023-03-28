@@ -1,0 +1,54 @@
+{
+"characterID": "AI67890",
+"basicInfo": {
+"name": "Evelyn",
+"gender": "Female",
+"occupation": "Assassin",
+"age": 28
+},
+"appearance": {
+"hairColor": "Black",
+"eyeColor": "Green",
+"height": 5.6
+},
+"personality": {
+"traits": ["Calculating", "Resourceful", "Determined"],
+"likes": ["Silence", "Precision", "Control"],
+"dislikes": ["Loud Noises", "Unpredictability", "Disorder"]
+},
+"relationships": {
+"friends": ["Nina", "Isaac", "Player"],
+"family": ["Deceased"],
+"enemies": ["The Brotherhood"],
+"relationshipToPlayer": ["Ally"]
+},
+"gameSpecific": {
+"faction": "Bandit",
+"questStatus": "in progress",
+"inventory": ["Dagger", "Poison Vials", "Smoke Bombs"]
+},
+"status": {
+"morale": 85,
+"emotion": "Determined",
+"reason": "Revenge",
+"goals": ["Find and Eliminate the Brotherhood"]
+},
+"custom": {
+"favoriteColor": "Red",
+"hometown": "Blackwater",
+"fears": ["Being Captured", "Failing her Mission"],
+"memories": [
+"Training with her Mentor",
+"The night her family was murdered",
+"Player showing concern about Evelyn's past",
+"Player offering help with personal struggles",
+"Building trust and connection with the player"
+]
+},
+"changedStatus": {
+"morale": 90,
+"emotion": "Appreciative",
+"reason": "The player's concern and persistence has made Evelyn feel more connected to them",
+"goals": ["Find and Eliminate the Brotherhood", "Cultivate a good working relationship with the player"]
+}
+}

@@ -3,6 +3,9 @@ import openai
 import os
 # OS and Env
 import os
+from Conversations import create_character
+from Conversations import start_chat
+from Conversations import imagine_character
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -81,7 +84,7 @@ def validate_input(prompt, valid_inputs):
 
 
 # function to create a character
-def create_character():
+def create_player1():
     if os.path.exists("Player1.json"):
         with open("Player1.json", "r") as f:
             existing_character = json.load(f)
@@ -266,6 +269,9 @@ def entering_tavern():
     choice = input("Enter your choice (1-3): ")
     # Handle the player's choice
     if choice == "1":
+        # Describe the bar area and the barkeep
+        print(
+            "You push your way through the crowd and make your way to the bar. The barkeep is a grizzled old man with a bushy beard and a scowl. He's polishing a mug with a rag, and he looks up as you approach.")
         approach_bar()
     elif choice == "2":
         look_for_someone()
@@ -275,14 +281,10 @@ def entering_tavern():
         print("Invalid choice. Please try again.")
         entering_tavern()  # call the function again to give the player another chance to make a choice
 
-
 def approach_bar():
     """
     This function describes the player approaching the bar, interacting with the barkeep, and choosing a course of action.
     """
-    # Describe the bar area and the barkeep
-    print(
-        "You push your way through the crowd and make your way to the bar. The barkeep is a grizzled old man with a bushy beard and a scowl. He's polishing a mug with a rag, and he looks up as you approach.")
     # Barkeep dialogue
     print("Barkeep: What can I get for ya? We've got ale, mead, and some stronger stuff if you're feelin' adventurous.")
     # Offer the player a choice of actions
@@ -290,75 +292,66 @@ def approach_bar():
     print("1. Chat with the barkeep")
     print("2. Order a drink")
     print("3. Order some food")
-    print("4. Leave the bar")
-    choice = input("Enter your choice (1-4): ")
+    print("4. Look around the bar")
+    print("5. Leave the bar")
+    choice = input("Enter your choice (1-5): ")
     # Handle the player's choice
     if choice == "1":
-        # print(
-        #    "You strike up a conversation with the barkeep. He tells you some tall tales about the area and the people who frequent the tavern.")
-        # Return to the main tavern menu
         initiate_chat_barkeep()
     elif choice == "2":
         print("You order a drink from the barkeep. He pours you a mug of ale and slides it across the counter to you.")
-        # Return to the main tavern menu
         entering_tavern()
     elif choice == "3":
-        print(
-            "You order some food from the barkeep. He grumbles and disappears into the kitchen, but returns a few minutes later with a plate of greasy sausages and potatoes.")
-        # Return to the main tavern menu
+        print("You order some food from the barkeep. He grumbles and disappears into the kitchen, but returns a few minutes later with a plate of greasy sausages and potatoes.")
         entering_tavern()
     elif choice == "4":
+        print("You take a moment to look around the bar and examine the other patrons.")
+        generated_characters = imagine_character("Medieval", 4).split("\n")
+        print("\nThe people at the bar include:")
+        for i, character in enumerate(generated_characters):
+            print(f"{i + 1}. {character}")
+        print(f"{len(generated_characters) + 1}. Go back")
+        selection = input("Enter the number of the person you want to talk to: ")
+        if selection.isnumeric() and int(selection) in range(1, len(generated_characters) + 1):
+            character = create_character(generated_characters[int(selection) - 1])
+            with open("character.json", "w") as f:
+                json.dump(character, f)
+            with open("RP_SystemPrompt.txt", "r") as f:
+                system_prompt = f.read()
+            with open("character.json", "r") as f:
+                character_json = json.load(f)
+            character_description = system_prompt + "\n" + json.dumps(character_json) + "\n" + "{{the player sits next to you at the bar and looks to you as if to start a conversation}}"
+            start_chat(character_description)
+        elif selection == str(len(generated_characters) + 1):
+            entering_tavern()
+        else:
+            print("Invalid choice. Please try again.")
+            approach_bar()
+    elif choice == "5":
         print("You decide to leave the bar and explore the rest of the tavern.")
-        # Return to the main tavern menu
         entering_tavern()
     else:
         print("Invalid choice. Please try again.")
-        approach_bar()  # call the function again to give the player another chance to make a choice
-
-
+        approach_bar()
 def initiate_chat_barkeep():
     """
     This function initiates a chat with GPT and allows the player to converse with a character.
     """
+    with open('RP_SystemPrompt.txt', 'r') as file:
+        system_prompt = file.read()
 
-    # Set up the system context for GPT
-    system_context = "You are an AI Actor in a videogame portraying a barkeep. Do not narrate anything other than direct character actions such as removes hat or shakes hand. Keep your responses as concise as possible. The player will act opposite you filling in the player's dialog. Please respond to their statements and pursue your character's goals.\n\nPlease show the character's thoughts and internal reasoning in [] brackets.\n\nAny information delivered in JSON Notation or {} comes from the overworld. Plain text is player input."
+    with open('barkeep_001.json', 'r') as file:
+        npc_json = file.read()
 
-    # Load the contents of the JSON file into a Python dictionary
-    with open('barkeep_001.json', 'r') as f:
-        barkeep_data = json.load(f)
+    string_of_text = "{{The player approaches the bar and greets you}}"
 
-    # Set up the GPT parameters
-    model_engine = "gpt-3.5-turbo"
-    max_tokens = 1024
+    concatenated_text = system_prompt + "\n" + npc_json + "\n" + string_of_text
+    start_chat(concatenated_text)
+    approach_bar()
 
-    # Set up the initial GPT prompt
-    prompt = "{The player is sitting at the tavern bar and wants to start a conversation with you}\n"
-
-    while True:
-        # Set up the full GPT prompt with context, previous response, and latest player message
-        full_prompt = f"{barkeep_data}\n\n{prompt}\n\n{system_context}"
-
-        # Send the prompt to GPT and get a response
-        response = openai.Completion.create(
-            engine=model_engine,
-            prompt=full_prompt,
-            max_tokens=max_tokens
-        )
-
-        # Print the barkeep's dialogue and create a new line for user input
-        print(response.choices[0].text + "\n")
-
-        # Get user input and break if they type "{end}"
-        message = input()
-        if message == "{end}":
-            break
-
-        # Update the prompt for the next iteration with the user's input and the previous response
-        prompt = f"{prompt}{message}\n"
 
 
 # test function
 game_intro()
-create_character()
+create_player1()
 entering_tavern()
