@@ -19,7 +19,28 @@ openai.api_key = os.getenv("API_KEY")
 #JSON Config
 import json
 
-def start_chat(SystemCommand):
+def store_character(character_json):
+    if character_json:
+        characters_collection.insert_one(character_json)
+def get_character_by_id(character_id):
+    character_data = characters_collection.find_one({"characterID": character_id})
+    return character_data
+def update_character(character_id, updated_data):
+    characters_collection.update_one({"characterID": character_id}, {"$set": updated_data})
+def list_all_character_names():
+    character_names = []
+
+    for character in characters_collection.find():
+        name = character["basicInfo"]["name"]
+        character_names.append(name)
+
+    return character_names
+def start_chat(character_id, system_command):
+    character_data = get_character_by_id(character_id)
+    if not character_data:
+        print("Error: Character not found")
+        return
+
     # Initialize the list of messages with a system message
     messages = [
         {"role": "system", "content": f"{SystemCommand}"},
@@ -176,4 +197,18 @@ def imagine_character(Seed="Medieval",Num=1):
     generated_text = response.choices[0].text.strip()
  
     return generated_text
+
+
+
+class Character:
+    def __init__(self, title, description, json_data):
+        self.title = title
+        self.description = description
+        self.json_data = json_data
+    def display(self):
+        print(f"Title: \n{self.title}")
+        print(f"Description: \n{self.description}")
+        print(f"JSON:\n{self.json_data}")
+
+
 
