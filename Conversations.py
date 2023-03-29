@@ -41,16 +41,14 @@ def list_all_character_names():
 
     return character_names
 def start_chat(character_id, system_command="""
-        You are an AI Actor in a videogame portraying characters that are sent to you. You will produce dialog on behalf of the character. 
+You are an AI Actor in a videogame portraying characters that are sent to you. You will produce dialog on behalf of the character.
 
 Do not narrate anything other than direct character actions such as *removes hat* or *shakes hand*. Keep your responses as concise as possible. The player will act opposite you filling in the hero's dialog. Please respond to their statements and pursue your character's goals.
 
-Please show the character's thoughts and internal reasoning in [] brackets. 
+Please show the character's thoughts and internal reasoning in [[]] brackets.
 
-Any information delivered in JSON Notation or \{\} comes from the overworld. Plain text is player input.
-    
-    
-    """):
+Any information delivered in JSON Notation or {{}} comes from the overworld. Plain text is player input.
+"""):
     character_data = get_character_by_id(character_id)
     if not character_data:
         print("Error: Character not found")
@@ -242,7 +240,7 @@ def new_character():
             type = input("Enter a type (or press Enter for Medieval): ")
             type = type if type != "" else None
             print("Imagining a character")
-            character = Conversations.imagine_character(Seed=type)
+            character = imagine_character(Seed=type)
             print(f"What about {character}")
             user_input = input("Create this character? (y/n): ")
             if user_input.lower() == "y":
@@ -250,13 +248,13 @@ def new_character():
         else:
             print("Invalid input. Please enter 'provide' or 'generate'.")
 
-    characterJson = Conversations.create_character(character)
-    characterSummary = Conversations.summarize_character(characterJson)
+    characterJson = create_character(character)
+    characterSummary = summarize_character(characterJson)
     print(f"\n\n\n-------------------\n{character}\n-------------------\n")
     print(characterSummary)
     user_input = input("\n\nDo you want to create this character? [y/n] ")
     if user_input.lower() == "y":
-        character_id = Conversations.store_character(characterJson)
+        character_id = store_character(characterJson)
         return character_id
 def list_characters():
     return list(characters_collection.find())
