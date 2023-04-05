@@ -5,10 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c1a7bb84-167a-44c5-ba7e-0b5e7a6e615e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Ben_Test_Env.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/EvelynPrime.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RP_SystemPrompt.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
