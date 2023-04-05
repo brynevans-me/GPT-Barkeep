@@ -19,6 +19,8 @@ openai.api_key = os.getenv("API_KEY")
 
 #JSON Config
 import json
+from jsonschema import validate
+from jsonschema.exceptions import ValidationError
 
 # Config
 
@@ -74,6 +76,9 @@ Any information delivered in JSON Notation or {{}} comes from the overworld. Pla
     # Set the parameters for the GPT-3 API request
     model = "gpt-3.5-turbo"
     temperature = 0.7
+    valid_json = False
+    attempts = 0
+    max_attempts = 3
 
     # Start the conversation loop
     while True:
@@ -86,24 +91,35 @@ Any information delivered in JSON Notation or {{}} comes from the overworld. Pla
             
             # Add the user input to the messages list
             messages.append({"role": "user", "content": "Modify the original JSON data to represent this player interaction. Be extreme with your changes, I want the character to seem to remember this interaction. Feel free to add any categories to the JSON you think would help. Reset the goals based off information and changes in this session, make the character dynamic but consistent."})
+            while not valid_json and attempts < max_attempts:
+                # Generate a response using the GPT-3 chat model
+                response = openai.ChatCompletion.create(
+                    model=model,
+                    messages=messages,
+                    max_tokens=1000,
+                    n=1,
+                    stop=None,
+                    temperature=temperature,
+                    top_p=1,
+                    frequency_penalty=0,
+                    presence_penalty=0
+                )
+                try:
+                    # Extract the generated response and attempt to load it as a JSON object
+                    updated_character_data = json.loads(response.choices[0].message['content'])
+                    valid_json = True
+                except json.JSONDecodeError:
+                    # If the JSON decoding fails, increment the attempts counter
+                    attempts += 1
 
-            # Generate a response using the GPT-3 chat model
-            response = openai.ChatCompletion.create(
-                model=model,
-                messages=messages,
-                max_tokens=1000,
-                n=1,
-                stop=None,
-                temperature=temperature,
-                top_p=1,
-                frequency_penalty=0,
-                presence_penalty=0
-            )
+            if valid_json:
+                # Update the character data
+                update_character(_id, updated_character_data)
+            else:
+                print("Error: Unable to update the character data. There might be an issue with the server.")
 
-            # Extract the generated response and update the character data
-            updated_character_data = json.loads(response.choices[0].message['content'])
-            update_character(_id, updated_character_data)
             break
+
 
         # Add the user input to the messages list
         messages.append({"role": "user", "content": user_input})
