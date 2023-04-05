@@ -20,17 +20,29 @@ openai.api_key = os.getenv("API_KEY")
 #JSON Config
 import json
 
+# Config
+
+
+
+
+
+def is_valid_character_json(character_json, schema):
+    try:
+        validate(instance=character_json, schema=schema)
+        return True
+    except ValidationError:
+        return False
 def store_character(character_json):
     if character_json:
         insert_result = characters_collection.insert_one(character_json)
-        return character_json["characterID"]
+        return str(insert_result.inserted_id)
     else:
         return None
-def get_character_by_id(character_id):
-    character_data = characters_collection.find_one({"characterID": character_id})
+def get_character_by_id(_id):
+    character_data = characters_collection.find_one({"_id": ObjectId(_id)})
     return character_data
-def update_character(character_id, updated_data):
-    characters_collection.update_one({"characterID": character_id}, {"$set": updated_data})
+def update_character(_id, updated_data):
+    characters_collection.update_one({"_id": ObjectId(_id)}, {"$set": updated_data})
 def list_all_character_names():
     character_names = []
 
@@ -40,7 +52,7 @@ def list_all_character_names():
         character_names.append((char_id, name))
 
     return character_names
-def start_chat(character_id, system_command="""
+def start_chat(_id, system_command="""
 You are an AI Actor in a videogame portraying characters that are sent to you. You will produce dialog on behalf of the character.
 
 Do not narrate anything other than direct character actions such as *removes hat* or *shakes hand*. Keep your responses as concise as possible. The player will act opposite you filling in the hero's dialog. Please respond to their statements and pursue your character's goals.
@@ -49,7 +61,7 @@ Please show the character's thoughts and internal reasoning in [[]] brackets.
 
 Any information delivered in JSON Notation or {{}} comes from the overworld. Plain text is player input.
 """):
-    character_data = get_character_by_id(character_id)
+    character_data = get_character_by_id(_id)
     if not character_data:
         print("Error: Character not found")
         return
@@ -90,7 +102,7 @@ Any information delivered in JSON Notation or {{}} comes from the overworld. Pla
 
             # Extract the generated response and update the character data
             updated_character_data = json.loads(response.choices[0].message['content'])
-            update_character(character_id, updated_character_data)
+            update_character(_id, updated_character_data)
             break
 
         # Add the user input to the messages list
@@ -254,35 +266,46 @@ def new_character():
     print(characterSummary)
     user_input = input("\n\nDo you want to create this character? [y/n] ")
     if user_input.lower() == "y":
-        character_id = store_character(characterJson)
-        return character_id
+        _id = store_character(characterJson)
+        return _id
 def list_characters():
     return list(characters_collection.find())
-def delete_character(character_id):
-    result = characters_collection.delete_one({"_id": ObjectId(character_id)})
+def delete_character(_id):
+    result = characters_collection.delete_one({"_id": ObjectId(_id)})
     return result.deleted_count > 0
-def get_character_by_id(character_id):
-    return characters_collection.find_one({"_id": ObjectId(character_id)})
+def get_character_by_id(_id):
+    return characters_collection.find_one({"_id": ObjectId(_id)})
 def manage_characters():
     while True:
-        print("\nCharacter management:")
-        print("1. List all characters")
+        print("\n--- Manage Characters ---")
+        print("1. List characters")
         print("2. Delete a character")
         print("3. Load a character")
         print("4. Create a new character")
         print("5. Exit")
-        user_input = input("Enter the number of your choice: ")
+        user_input = input("Choose an option (1-5): ")
 
         if user_input == "1":
-            character_names = list_all_character_names()
-            for i, (char_id, name) in enumerate(character_names, start=1):
-                print(f"{i}. {name} (ID: {char_id})")
+            characters = list_all_character_names()
+            if characters:
+                for i, (char_id, name) in enumerate(characters, start=1):
+                    print(f"{i}. {name} (ID: {char_id})")
+            else:
+                print("No characters found in the database.")
         elif user_input == "2":
-            character_id = input("Enter the character ID to delete: ")
-            delete_character(character_id)
+            _id = input("Enter the ID of the character you want to delete: ")
+            if delete_character(_id):
+                print("Character deleted successfully.")
+            else:
+                print("Character not found.")
         elif user_input == "3":
-            character_id = input("Enter the character ID to load: ")
-            start_chat(character_id)
+            _id = input("Enter the ID of the character you want to load: ")
+            character_data = get_character_by_id(_id)
+            if character_data:
+                print(f"Character loaded: {character_data['basicInfo']['name']} (ID: {character_data['_id']})")
+                start_chat(_id)
+            else:
+                print("Character not found.")
         elif user_input == "4":
             new_character()
             print("New character created.")
@@ -290,37 +313,4 @@ def manage_characters():
             print("Exiting character management.")
             break
         else:
-            print("Invalid input. Please try again.")
-    while True:
-        print("\n--- Manage Characters ---")
-        print("1. List characters")
-        print("2. Delete a character")
-        print("3. Load a character")
-        print("4. Exit")
-        user_input = input("Choose an option (1-4): ")
-
-        if user_input == "1":
-            characters = list_characters()
-            if characters:
-                for i, character in enumerate(characters, start=1):
-                    print(f"{i}. {character['basicInfo']['name']} (ID: {character['_id']})")
-            else:
-                print("No characters found in the database.")
-        elif user_input == "2":
-            character_id = input("Enter the ID of the character you want to delete: ")
-            if delete_character(character_id):
-                print("Character deleted successfully.")
-            else:
-                print("Character not found.")
-        elif user_input == "3":
-            character_id = input("Enter the ID of the character you want to load: ")
-            character_data = get_character_by_id(character_id)
-            if character_data:
-                print(f"Character loaded: {character_data['basicInfo']['name']} (ID: {character_data['_id']})")
-            else:
-                print("Character not found.")
-        elif user_input == "4":
-            print("Exiting character management.")
-            break
-        else:
-            print("Invalid input. Please choose an option between 1 and 4.")
+            print("Invalid input. Please choose an option between 1 and 5.")
